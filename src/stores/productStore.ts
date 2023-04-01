@@ -1,5 +1,5 @@
-import {defineStore} from "pinia"
-import type {TProduct} from "@/types/TProduct";
+import { defineStore } from "pinia"
+import type { TProduct } from "@/types/TProduct";
 
 type State = {
     products: TProduct[]

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { productStore } from "@/stores/store";
+import { productStore } from "@/stores/productStore";
 import { storeToRefs } from "pinia";
 
 const store = productStore();
