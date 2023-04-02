@@ -42,9 +42,11 @@ export const productStore = defineStore({
         }
     },
     getters: {
+        //функция получения информации о всех продуктах
         allProducts({products}): TProduct[] {
             return products
         },
+        //функция получения одного продукта по его ID
         getProductById({products}): (id: number) => TProduct | undefined {
             return (id: number): TProduct | undefined => {
                 return products.find((product) => product.id === id)

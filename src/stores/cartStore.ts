@@ -21,6 +21,7 @@ export const cartStore = defineStore({
         },
     },
     actions: {
+        //функция добавления продукта в корзину
         addItemToCart(item: TProduct) {
             const cartItem = this.cart.object.find((el) => el.id === item.id);
 
@@ -31,16 +32,22 @@ export const cartStore = defineStore({
 
             this.cart.object.push({id: item.id, count: 1});
         },
+        //функция удаления продукта из корзины
         removeItemFromCart(item: TProduct) {
+            //получаем продукт из корзины
             const cartItem = this.cart.object.find((el) => el.id === item.id);
-
+            //если он там есть заходим в функцию
             if (cartItem) {
+                //уменьшаем число данных товарав на 1
                 cartItem.count--;
+                //если товаров осталось 0
                 if (cartItem.count === 0) {
+                    //удаляем запись о данном товаре из корзины
                     this.cart.object.splice(this.cart.object.indexOf(cartItem), 1);
                 }
             }
         },
+        //очистка корзины
         clearCart() {
             this.cart.object = [];
         },
