@@ -4,9 +4,8 @@
       <template v-if="isForm">
         <input class="form__input" v-model="surname" placeholder="Фамилия"/>
         <input class="form__input" v-model="name" placeholder="Имя"/>
-        <input class="form__input" placeholder="Отчество"/>
         <input class="form__input" v-model="address" placeholder="Адрес"/>
-        <input class="form__input" placeholder="Email" type="email"/>
+        <input class="form__input" v-model="email" placeholder="Email" type="email"/>
         <div class="form__button" @click="isForm = false">Продолжить</div>
       </template>
       <template v-else>
@@ -31,11 +30,12 @@ const { router } = useRouter();
 const name = ref('');
 const surname = ref('');
 const address = ref('');
+const email = ref('');
 
 const final = () => {
   clearCart();
   router.push({ name: 'home' });
-  axios.post('http://localhost:3000/api/export', { data: { name: name.value, surname: surname.value, address: address.value } })
+  axios.post('http://localhost:3000/api/export', { data: { name: name.value, surname: surname.value, address: address.value, email: email.value } })
       .then((response) => {
         axios.get('http://localhost:3000/api/get')
             .then((res) => {

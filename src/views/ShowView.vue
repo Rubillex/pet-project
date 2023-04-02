@@ -1,25 +1,31 @@
 <template>
   <div>
     <div class="item-block">
-      <span class="item-block__name" v-html="product.name" />
-      <img class="untouchable item-block__image" :src="product.image" alt="image" />
-      <span class="item-block__description" v-html="product.description" />
+      <span class="item-block__name" v-html="product.name"/>
+      <img class="untouchable item-block__image" :src="product.image" alt="image"/>
+      <span class="item-block__description" v-html="product.description"/>
 
     </div>
-    <div>{{ cart }}</div>
-    <button @click="addItemToCart">Добавить</button>
-    <button @click="removeItemFromCart">Убрать</button>
-    <button @click="clearCart">Очистить корзину</button>
+    <template v-if="!itemInCart">
+      <span class="item-block__button" @click="addItemToCart">Купить</span>
+    </template>
+    <template v-else>
+      <div class="item-block__footer">
+        <span class="item-block__button untouchable" @click="removeItemFromCart">-</span>
+        <span class="untouchable">{{ cart.object.find((el) => el.id === product.id).count }}</span>
+        <span class="item-block__button untouchable" @click="addItemToCart">+</span>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from '@/use/router';
-import { computed } from 'vue';
-import { productStore } from '@/stores/productStore';
-import { cartStore } from '@/stores/cartStore';
+import {useRouter} from '@/use/router';
+import {computed} from 'vue';
+import {productStore} from '@/stores/productStore';
+import {cartStore} from '@/stores/cartStore';
 
-const { router  } = useRouter();
+const {router} = useRouter();
 
 const itemId = computed(() => parseInt(router.currentRoute.value.params.itemId));
 const productsStore = productStore();
@@ -29,6 +35,10 @@ const product = productsStore.getProductById(itemId.value);
 const cartsStore = cartStore();
 
 const cart = cartsStore.getCart;
+
+const itemInCart = computed(() => {
+  return !!cart.object.find((el) => el.id === product.id);
+});
 
 const addItemToCart = () => {
   cartsStore.addItemToCart(product);
@@ -45,60 +55,102 @@ const clearCart = () => {
 
 <style scoped lang="scss">
 
-  .item-block {
+.item-block {
+  padding: 12px;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 
-    padding: 12px;
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    border-radius: 8px;
-    box-sizing: border-box;
+  &__name {
+    font-size: 21px;
+    font-weight: 600;
+    color: #000;
+    font-style: normal;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &__image {
+    border-radius: 3px;
+    width: 30%;
+    height: 30%;
+    margin: 25px auto;
+  }
+
+  &__description {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 21px;
+    font-weight: 300;
+    color: #000;
+    font-style: normal;
+  }
+
+  &__button {
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    position: relative;
+    align-items: center;
 
-
-    &__name {
-      font-size: 21px;
-      font-weight: 600;
-      color: #000;
-      font-style: normal;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    &__image {
-      border-radius: 3px;
-      width: 30%;
-      height: 30%;
-      margin: 25px auto;
-    }
-
-    &__description {
-      margin-left: auto;
-      margin-right: auto;
-      font-size: 21px;
-      font-weight: 300;
-      color: #000;
-      font-style: normal;
-    }
-  }
-
-  button {
-    float: left;
-    color: black;
-    text-align: center;
-    padding: 12px;
+    --color: #560bad;
+    font-family: inherit;
+    max-width: 8em;
+    min-width: 2rem;
+    height: 2.6em;
+    line-height: 2.5em;
     margin: 20px;
-    text-decoration: none;
-    font-size: 18px;
-    line-height: 25px;
-    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--color);
+    transition: color .5s;
+    z-index: 1;
+    font-size: 17px;
+    border-radius: 6px;
+    font-weight: 500;
+    color: var(--color);
+
+    &:before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      background: var(--color);
+      height: 150px;
+      width: 200px;
+      border-radius: 50%;
+    }
+
+    &:hover {
+      color: #fff;
+    }
+
+    &:before {
+      top: 100%;
+      left: 100%;
+      transition: all .7s;
+    }
+
+    &:hover:before {
+      top: -30px;
+      left: -30px;
+    }
+
+    &:active:before {
+      background: #3a0ca3;
+      transition: background 0s;
+    }
   }
 
-  button:hover {
-    background-color: #ddd;
-    color: black;
-  }
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 
+    align-items: center;
+  }
+}
 </style>

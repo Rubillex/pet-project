@@ -6,17 +6,18 @@
           <img alt="img" :src="productsStore.getProductById(item.id).image" />
         </div>
         <div class="cart-element__title">{{ productsStore.getProductById(item.id).name }}</div>
-        <div class="cart-element__buttons">
-          <div class="cart-element__button" @click="removeItemFromCart(productsStore.getProductById(item.id))">-</div>
-          <div class="cart-element__count">{{ item.count }}</div>
-          <div class="cart-element__button" @click="addItemToCart(productsStore.getProductById(item.id))">+</div>
+        <div class="cart-element__right">
+          <div class="cart-element__buttons">
+            <div class="cart-element__button untouchable" @click="removeItemFromCart(productsStore.getProductById(item.id))">-</div>
+            <div class="cart-element__count">{{ item.count }}</div>
+            <div class="cart-element__button untouchable" @click="addItemToCart(productsStore.getProductById(item.id))">+</div>
+          </div>
+          <div class="cart-element__price">{{ productsStore.getProductById(item.id).price * item.count + ' ₽' }}</div>
         </div>
-        <div class="cart-element__price">{{ productsStore.getProductById(item.id).price * item.count }}</div>
-
       </div>
     </div>
     <div class="footer">
-      <span class="footer__sum" v-html="'Общая стоимость ' + allPrice" />
+      <span class="footer__sum" v-html="'Общая стоимость: ' + allPrice + ' ₽'" />
       <div class="footer__next" @click="router.push({ name: 'checkout' })">Оформить</div>
     </div>
   </div>
@@ -35,6 +36,16 @@ const store = cartStore();
 const cart = store.getCart;
 
 const productsStore = productStore();
+
+if (cart.object.length < 1) {
+  router.push({ name: 'home' });
+}
+
+watch(cart.object, () => {
+  if (cart.object.length < 1) {
+    router.push({ name: 'home' });
+  }
+});
 
 const addItemToCart = (product) => {
   store.addItemToCart(product);
@@ -131,6 +142,7 @@ const allPrice = computed(() => {
   border: 1px #242424 solid;
   border-radius: 8px;
   padding: 20px;
+  justify-content: space-between;
 
   &__image {
     & img {
@@ -138,17 +150,25 @@ const allPrice = computed(() => {
     }
   }
 
-  &__buttons {
+  &__right {
     margin-left: auto;
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+  }
 
+  &__buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
   }
 
   &__button {
     background: bisque;
-    padding: 5px;
+    padding: 15px;
     border-radius: 5px;
     width: 6px;
     height: 6px;

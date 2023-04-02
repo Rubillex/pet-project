@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 
 import './assets/styles.scss'
+import './assets/_fonts.scss'
 
 const app = createApp(App);
 const pinia = createPinia();

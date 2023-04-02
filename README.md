@@ -23,3 +23,9 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### START DATABASE SERVER
+
+```
+node db.js
+```

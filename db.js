@@ -13,8 +13,9 @@ const db = new sqlite3.Database('./data.db', (err) => {
 
     db.run('CREATE TABLE IF NOT EXISTS orders(\n' +
         '\tname data_type TEXT NOT NULL,\n' +
-        '   \tsurname TEXT NOT NULL,\n' +
+        '\tsurname TEXT NOT NULL,\n' +
         '\taddress TEXT NOT NULL,\n' +
+        '\temail TEXT NOT NULL,\n' +
         '\ttable_constraints\n' +
         ')');
 
@@ -22,8 +23,8 @@ const db = new sqlite3.Database('./data.db', (err) => {
 });
 app.post('/api/export', (req, res, next) => {
     const { data } = req.body;
-    db.run('INSERT INTO orders (name, surname, address) VALUES (?, ?, ?)',
-        [ data.name, data.surname, data.address ]);
+    db.run('INSERT INTO orders (name, surname, address, email) VALUES (?, ?, ?, ?)',
+        [ data.name, data.surname, data.address, data.email ]);
     res.send('Data exported to SQLite.');
 });
 
