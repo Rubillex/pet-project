@@ -1,7 +1,4 @@
 <template>
-
-
-
   <div class="card__wrapper">
     <div class="card" @click="openProductPage(product.id)" v-for="product in allProducts" :key="product.id">
       <img class="card__image untouchable" :src="product.image" alt="image" />
