@@ -85,7 +85,7 @@ const email = ref('');
 const final = () => {\
 //очистить корзину\
 clearCart();\
-//переход на главную страницу
+//переход на главную страницу\
 router.push({ name: 'home' });\
 //отправка запроса к базе данных
 axios.post('http://localhost:3000/api/export', { data: { name: name.value, surname: surname.value, address: address.value, email: email.value } })\
