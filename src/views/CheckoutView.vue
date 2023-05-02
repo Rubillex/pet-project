@@ -1,31 +1,21 @@
 <template>
   <div class="checkout">
     <div class="form">
-      <template v-if="isForm">
         <input class="form__input" v-model="surname" placeholder="Фамилия"/>
         <input class="form__input" v-model="name" placeholder="Имя"/>
         <input class="form__input" v-model="address" placeholder="Адрес"/>
         <input class="form__input" v-model="email" placeholder="Email" type="email"/>
-        <div class="form__button" @click="isForm = false">Продолжить</div>
-      </template>
-      <template v-else>
-        <input class="form__input" placeholder="Держатель карты"/>
-        <input class="form__input" placeholder="Номер карты"/>
-        <input class="form__input" placeholder="MM/YY"/>
-        <input class="form__input" placeholder="CVV"/>
-        <div class="form__button" @click="final">Готово</div>
-      </template>
+        <div class="form__button" @click="final">Продолжить</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {cartStore} from "@/stores/cartStore";
+import { ref } from "vue";
+import { cartStore } from "@/stores/cartStore";
 import {useRouter} from "@/use/router";
 import axios from 'axios';
 
-const isForm = ref(true);
 const { router } = useRouter();
 const name = ref('');
 const surname = ref('');

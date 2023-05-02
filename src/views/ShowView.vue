@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="item-block">
-      <span class="item-block__name" v-html="product.name"/>
-      <img class="untouchable item-block__image" :src="product.image" alt="image"/>
-      <span class="item-block__description" v-html="product.description"/>
-
+        <img class="untouchable item-block__image" :src="product?.image" alt="image"/>
+        <span class="item-block__name" v-html="product?.name"/>
+        <span class="item-block__price" v-html="convertPrice(product?.price) + ' ₽'"/>
+        <span class="item-block__description" v-html="product?.description"/>
     </div>
     <template v-if="!itemInCart">
       <span class="item-block__button" @click="addItemToCart">Купить</span>
@@ -12,18 +12,19 @@
     <template v-else>
       <div class="item-block__footer">
         <span class="item-block__button untouchable" @click="removeItemFromCart">-</span>
-        <span class="untouchable">{{ cart.object.find((el) => el.id === product.id).count }}</span>
+        <span class="untouchable">{{ cart.object.find((el) => el.id === product?.id).count }}</span>
         <span class="item-block__button untouchable" @click="addItemToCart">+</span>
       </div>
     </template>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {useRouter} from '@/use/router';
 import {computed} from 'vue';
 import {productStore} from '@/stores/productStore';
 import {cartStore} from '@/stores/cartStore';
+import {useNumberDelimiter} from "@/use/number";
 
 const {router} = useRouter();
 
@@ -36,21 +37,23 @@ const cartsStore = cartStore();
 
 const cart = cartsStore.getCart;
 
+const convertPrice = (price: number) => useNumberDelimiter(price);
+
 const itemInCart = computed(() => {
-  return !!cart.object.find((el) => el.id === product.id);
+  return !!cart.object.find((el) => el.id === product?.id);
 });
 
 const addItemToCart = () => {
-  cartsStore.addItemToCart(product);
+    if (product) {
+        cartsStore.addItemToCart(product);
+    }
 };
 
 const removeItemFromCart = () => {
-  cartsStore.removeItemFromCart(product);
+    if (product) {
+        cartsStore.removeItemFromCart(product);
+    }
 };
-
-const clearCart = () => {
-  cartsStore.clearCart();
-}
 </script>
 
 <style scoped lang="scss">
@@ -62,11 +65,11 @@ const clearCart = () => {
   background: #fff;
   border-radius: 8px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  display: grid;
+  grid-template-areas: "image name" "image price" "image ." "desc desc";
 
   &__name {
+    grid-area: name;
     font-size: 21px;
     font-weight: 600;
     color: #000;
@@ -75,14 +78,24 @@ const clearCart = () => {
     margin-right: auto;
   }
 
+  &__price {
+    grid-area: price;
+    font-size: 21px;
+    font-weight: 600;
+    color: #000;
+    font-style: normal;
+    padding-top: 24px;
+  }
+
   &__image {
+    grid-area: image;
     border-radius: 3px;
-    width: 30%;
-    height: 30%;
+    width: 60%;
     margin: 25px auto;
   }
 
   &__description {
+    grid-area: desc;
     margin-left: auto;
     margin-right: auto;
     font-size: 21px;
