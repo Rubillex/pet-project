@@ -20,7 +20,6 @@ const db = new sqlite3.Database('./data.db', (err) => {
         '\tsurname TEXT NOT NULL,\n' +
         '\taddress TEXT NOT NULL,\n' +
         '\temail TEXT NOT NULL,\n' +
-        '\ttable_constraints\n' +
         ')');
 
     console.log('Connected to the database.');
