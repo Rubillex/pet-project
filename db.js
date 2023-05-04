@@ -19,7 +19,7 @@ const db = new sqlite3.Database('./data.db', (err) => {
         '\tname data_type TEXT NOT NULL,\n' +
         '\tsurname TEXT NOT NULL,\n' +
         '\taddress TEXT NOT NULL,\n' +
-        '\temail TEXT NOT NULL,\n' +
+        '\temail TEXT NOT NULL\n' +
         ')');
 
     console.log('Connected to the database.');
