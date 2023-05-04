@@ -15,7 +15,7 @@ const db = new sqlite3.Database('./data.db', (err) => {
     }
     //Создаем таблицу orders, если её нет.
     db.run('CREATE TABLE IF NOT EXISTS orders(\n' +
-        '\tID INTEGER PRIMARY KEY AUTOINCREMENT,,\n' +
+        '\tID INTEGER PRIMARY KEY AUTOINCREMENT,\n' +
         '\tname data_type TEXT NOT NULL,\n' +
         '\tsurname TEXT NOT NULL,\n' +
         '\taddress TEXT NOT NULL,\n' +
