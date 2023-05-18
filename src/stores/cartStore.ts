@@ -2,7 +2,7 @@ import {defineStore} from "pinia"
 import type {TCart} from '@/types/TCart';
 import type {TProduct} from "@/types/TProduct";
 
-type  State = {
+type State = {
     cart: TCart
 }
 

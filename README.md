@@ -20,9 +20,18 @@ yarn install
 npm run dev
 ```
 
-### START DATABASE SERVER
+### DATABASE
 
+
+```sh
+npx sequelize-cli db:migrate
 ```
+
+```sh
+npx sequelize-cli db:seed:all
+```
+
+```sh
 node db.js
 ```
 

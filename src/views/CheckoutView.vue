@@ -11,10 +11,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { cartStore } from "@/stores/cartStore";
-import {useRouter} from "@/use/router";
-import axios from 'axios';
+import { userApiStore } from "@/stores/usersApi";
+import { orderApiStore } from "@/stores/ordersApi";
+import { productApiStore } from "@/stores/productsApi";
+import { orderProductApiStore } from "@/stores/orderPropuctsApi";
+import { useRouter } from "@/use/router";
+import { productStore } from "@/stores/productStore";
 
 const { router } = useRouter();
 const name = ref('');
@@ -22,22 +26,49 @@ const surname = ref('');
 const address = ref('');
 const email = ref('');
 
-const final = () => {
-  clearCart();
-  router.push({ name: 'home' });
-  axios.post('http://localhost:3000/api/export', { data: { name: name.value, surname: surname.value, address: address.value, email: email.value } })
-      .then((response) => {
-        axios.get('http://localhost:3000/api/get')
-            .then((res) => {
-              console.log(res.data.rows);
-            })
-      })
-      .catch((error) => {
-        console.error(error);
+const cartsStore = cartStore();
+const usersApiStore = userApiStore();
+const ordersApiStore = orderApiStore();
+const productsApiStore = productApiStore();
+const orderProductsApiStore = orderProductApiStore();
+
+const cart = cartsStore.getCart;
+const productsStore = productStore();
+
+const allPrice = computed(() => {
+    let sum = 0;
+    cart.object.forEach((el) => sum += (productsStore.getProductById(el.id).price) * el.count);
+
+    return sum;
+});
+
+const final = async () => {
+
+     usersApiStore.storeUser({
+        name: name.value,
+        surname: surname.value,
+        address: address.value,
+        email: email.value,
+    });
+
+    const order = await ordersApiStore.storeOrder({
+        price: allPrice.value,
+        surname: surname.value,
+    });
+
+    for (const el of cart.object) {
+      const product = await productsApiStore.getProduct(el.id);
+      await orderProductsApiStore.storeOrderProduct({
+        productId: product.data.id,
+        orderId: order.data.id,
       });
+    }
+
+  clearCart();
+
+    router.push({name: 'home'});
 };
 
-const cartsStore = cartStore();
 
 const clearCart = () => {
   cartsStore.clearCart();

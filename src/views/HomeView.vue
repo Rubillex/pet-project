@@ -33,8 +33,6 @@ const openProductPage = (id: number) => {
 </script>
 
 <style scoped lang="scss">
-
-
 .card {
   padding: 12px;
   width: 100%;

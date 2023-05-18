@@ -2,48 +2,116 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
+const finale = require('finale-rest');
+const cors = require('cors');
+const Sequelize = require('sequelize');
 const app = express();
 const port = 3000;
 
 //Добавляем возможность получения json
 app.use(bodyParser.json());
 
-//Инициализация SQLite базы данных
-const db = new sqlite3.Database('./data.db', (err) => {
-    if (err) {
-        console.error(err.message);
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './database.sqlite'
+});
+
+let User = sequelize.define('users', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+    surname:{
+        type: Sequelize.STRING,
+    },
+    address:{
+        type: Sequelize.STRING,
+    },
+    email:{
+        type: Sequelize.STRING,
+    },
+});
+
+let Order = sequelize.define('orders', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    price: {
+        type: Sequelize.FLOAT,
+    },
+    surname:{
+        type: Sequelize.STRING,
+    },
+});
+
+let Product = sequelize.define('products', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+    price: {
+        type: Sequelize.FLOAT
     }
-    //Создаем таблицу orders, если её нет.
-    db.run('CREATE TABLE IF NOT EXISTS orders(\n' +
-        '\tID INTEGER PRIMARY KEY AUTOINCREMENT,\n' +
-        '\tname data_type TEXT NOT NULL,\n' +
-        '\tsurname TEXT NOT NULL,\n' +
-        '\taddress TEXT NOT NULL,\n' +
-        '\temail TEXT NOT NULL\n' +
-        ')');
-
-    console.log('Connected to the database.');
 });
 
-//функция сохранения данных в таблицу
-app.post('/api/export', (req, res, next) => {
-    const { data } = req.body;
-    db.run('INSERT INTO orders (name, surname, address, email) VALUES (?, ?, ?, ?)',
-        [ data.name, data.surname, data.address, data.email ]);
-    res.send('Data exported to SQLite.');
-});
-
-//функция вывода данных из таблицы
-app.get("/api/get", (req, res, next) => {
-    db.all("SELECT * FROM orders", [], (err, rows) => {
-        if (err) {
-            res.status(400).json({"error":err.message});
-            return;
+let OrderProducts = sequelize.define('orders_products', {
+    orderId: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Order,
+            key: 'id'
         }
-        res.status(200).json({rows});
-    });
+    },
+    productId: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Product,
+            key: 'id'
+        }
+    }
 });
 
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+Product.belongsToMany(Order, { through: OrderProducts });
+Order.belongsToMany(Product, { through: OrderProducts });
+
+finale.initialize({
+    app: app,
+    sequelize: sequelize
 });
+
+let userResource = finale.resource({
+    model: User,
+    endpoints: ['/users', '/users/:id']
+});
+
+let orderResource = finale.resource({
+    model: Order,
+    endpoints: ['/orders', '/orders/:id']
+});
+
+let productResource = finale.resource({
+    model: Product,
+    endpoints: ['/products', '/products/:id']
+});
+
+let orderProductResource = finale.resource({
+    model: OrderProducts,
+    endpoints: ['/order-products', '/order-products/:id']
+});
+sequelize
+    .sync({ force: false })
+    .then(() => {
+        app.listen(port, () => {
+            console.log('listening to port localhost:' + port)
+        })
+    });
