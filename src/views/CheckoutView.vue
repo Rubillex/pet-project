@@ -44,27 +44,31 @@ const allPrice = computed(() => {
 
 const final = async () => {
 
+    //Создаем запись в таблице users
      usersApiStore.storeUser({
         name: name.value,
         surname: surname.value,
         address: address.value,
         email: email.value,
     });
-
+    //создаем запись в таблице orderd
     const order = await ordersApiStore.storeOrder({
         price: allPrice.value,
         surname: surname.value,
     });
 
+    //перебираем товары в корзине
     for (const el of cart.object) {
+      //поулчаем товар из таблицы
       const product = await productsApiStore.getProduct(el.id);
+      //привязываем полученный товар к заказу
       await orderProductsApiStore.storeOrderProduct({
         productId: product.data.id,
         orderId: order.data.id,
       });
     }
-
-  clearCart();
+    //очищаем корзину
+    clearCart();
 
     router.push({name: 'home'});
 };

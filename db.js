@@ -11,11 +11,14 @@ const port = 3000;
 //Добавляем возможность получения json
 app.use(bodyParser.json());
 
+//инициализируем ORM
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: './database.sqlite'
 });
 
+//описываем модель User, которая привязана к таблице users
+//Далее аналогично для продукта, заказа и таблицы связи продукта и заказа
 let User = sequelize.define('users', {
     id: {
         type: Sequelize.INTEGER,
@@ -81,14 +84,17 @@ let OrderProducts = sequelize.define('orders_products', {
     }
 });
 
+//продукт имеет связь многие ко многим с заказами через модель OrderProducts
 Product.belongsToMany(Order, { through: OrderProducts });
 Order.belongsToMany(Product, { through: OrderProducts });
 
+//инициализируем finale - это библиотека для генерации CRUD ресурсов
 finale.initialize({
     app: app,
     sequelize: sequelize
 });
 
+//CRUD для моделей с указанием эндпоинтов
 let userResource = finale.resource({
     model: User,
     endpoints: ['/users', '/users/:id']
@@ -108,6 +114,7 @@ let orderProductResource = finale.resource({
     model: OrderProducts,
     endpoints: ['/order-products', '/order-products/:id']
 });
+//Подключение базы данных
 sequelize
     .sync({ force: false })
     .then(() => {
